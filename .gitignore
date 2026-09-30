@@ -38,6 +38,9 @@ yarn-error.log*
 /prisma/dev.db
 /prisma/dev.db-journal
 
+# local Railway link
+.railway
+
 # vercel
 .vercel
 

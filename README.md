@@ -35,6 +35,8 @@ npm run dev
 
 The dev server binds to `0.0.0.0:43127`. Open [http://127.0.0.1:43127](http://127.0.0.1:43127). `next.config.ts` lists `127.0.0.1` and `localhost` in `allowedDevOrigins` so the dev socket is allowed when the process listens on all interfaces.
 
+Production (`npm start`) listens on `PORT`, or `43127` when that variable is unset. On Railway the SQLite file is stored on the attached volume (`RAILWAY_VOLUME_MOUNT_PATH`) so accounts and signatures survive a restart. Set `AUTH_SECRET` in the host environment. OAuth and Stripe stay disabled until their own variables are set there; do not commit those keys.
+
 Email registration and the full sign flow work with no API keys. Copy `.env.example` to `.env.local` when you want OAuth or donations.
 
 ### Stripe test keys
