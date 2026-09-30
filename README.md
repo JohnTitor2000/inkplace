@@ -33,7 +33,7 @@ npx prisma db push
 npm run dev
 ```
 
-The dev server binds to `0.0.0.0:43127`. Open [http://127.0.0.1:43127](http://127.0.0.1:43127).
+The dev server binds to `0.0.0.0:43127`. Open [http://127.0.0.1:43127](http://127.0.0.1:43127). `next.config.ts` lists `127.0.0.1` and `localhost` in `allowedDevOrigins` so the dev socket is allowed when the process listens on all interfaces.
 
 Email registration and the full sign flow work with no API keys. Copy `.env.example` to `.env.local` when you want OAuth or donations.
 
