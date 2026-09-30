@@ -51,6 +51,7 @@ export async function SiteHeader() {
         ) : (
           <Button
             size="sm"
+            nativeButton={false}
             render={<Link href="/register" />}
           >
             Create account
