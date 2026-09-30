@@ -7,7 +7,7 @@ It is built for people in the United States. The interface is English. This is n
 ## Stack
 
 - Next.js (App Router), TypeScript, Tailwind CSS, shadcn/ui
-- Auth.js (next-auth): email and password with no external secrets, plus Google and GitHub when their env vars are set
+- Auth.js (next-auth): email and password with no external secrets, plus Google, Apple, Microsoft Entra ID, and GitHub when their env vars are set
 - Prisma and SQLite in the repo (`prisma/dev.db`)
 - pdf.js to render PDFs and read the text layer, pdf-lib to stamp the signature
 - signature_pad for drawing (mouse, trackpad, graphics tablet)
@@ -56,4 +56,22 @@ Put the signing secret in `STRIPE_WEBHOOK_SECRET`. Without it, the webhook route
 
 ### OAuth
 
-Set `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET` and `AUTH_GITHUB_ID` / `AUTH_GITHUB_SECRET`. Buttons stay visible and explain which variables are missing when they are unset.
+Login and register always show Google, Apple, Microsoft, and GitHub. A provider is registered with Auth.js only when its id and secret are both set. Otherwise the button stays visible, stays disabled, and names the missing variables. A click never pretends the login succeeded.
+
+| Provider | Required | Optional |
+| --- | --- | --- |
+| Google | `AUTH_GOOGLE_ID`, `AUTH_GOOGLE_SECRET` | |
+| Apple | `AUTH_APPLE_ID`, `AUTH_APPLE_SECRET` | |
+| Microsoft Entra ID | `AUTH_MICROSOFT_ENTRA_ID_ID`, `AUTH_MICROSOFT_ENTRA_ID_SECRET` | `AUTH_MICROSOFT_ENTRA_ID_ISSUER` |
+| GitHub | `AUTH_GITHUB_ID`, `AUTH_GITHUB_SECRET` | |
+
+`AUTH_APPLE_SECRET` is the JWT client secret from Apple, not a plain string. Apple rejects callback URLs that are not HTTPS, so sign-in with Apple cannot finish on `http://127.0.0.1`.
+
+Without `AUTH_MICROSOFT_ENTRA_ID_ISSUER`, Microsoft uses `https://login.microsoftonline.com/common/v2.0`, which allows personal, work, and school accounts. Set the issuer to `https://login.microsoftonline.com/<tenant-id>/v2.0` to keep sign-in inside one directory.
+
+Callback URLs:
+
+- `/api/auth/callback/google`
+- `/api/auth/callback/apple`
+- `/api/auth/callback/microsoft-entra-id`
+- `/api/auth/callback/github`

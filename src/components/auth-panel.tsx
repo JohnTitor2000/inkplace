@@ -10,14 +10,19 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { safeCallbackPath } from "@/lib/validators"
 
-type ProviderFlags = { google: boolean; github: boolean }
+type OAuthButtonConfig = {
+  id: "google" | "apple" | "microsoft-entra-id" | "github"
+  label: string
+  enabled: boolean
+  missing: string
+}
 
 export function LoginForm({
   callbackUrl,
   providers,
 }: {
   callbackUrl?: string
-  providers: ProviderFlags
+  providers: OAuthButtonConfig[]
 }) {
   const router = useRouter()
   const next = safeCallbackPath(callbackUrl)
@@ -48,7 +53,7 @@ export function LoginForm({
   return (
     <AuthShell
       title="Log in"
-      lede="Use the email you registered with. Google and GitHub stay available when their keys are set."
+      lede="Use the email you registered with, or one of the providers below when its keys are set."
       providers={providers}
       callbackUrl={next}
       footer={
@@ -82,7 +87,7 @@ export function LoginForm({
   )
 }
 
-export function RegisterForm({ providers }: { providers: ProviderFlags }) {
+export function RegisterForm({ providers }: { providers: OAuthButtonConfig[] }) {
   const router = useRouter()
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
@@ -125,7 +130,7 @@ export function RegisterForm({ providers }: { providers: ProviderFlags }) {
   return (
     <AuthShell
       title="Create an account"
-      lede="Email and a password are enough. No API keys required."
+      lede="Email and a password are enough. The providers below name any keys they still need."
       providers={providers}
       callbackUrl="/app"
       footer={
@@ -171,7 +176,7 @@ function AuthShell({
 }: {
   title: string
   lede: string
-  providers: ProviderFlags
+  providers: OAuthButtonConfig[]
   callbackUrl: string
   footer: React.ReactNode
   children: React.ReactNode
@@ -184,20 +189,16 @@ function AuthShell({
       </div>
       <div className="rounded-xl bg-card p-4 ring-1 ring-foreground/10">{children}</div>
       <div className="grid gap-3">
-        <OAuthButton
-          label="Continue with Google"
-          provider="google"
-          enabled={providers.google}
-          callbackUrl={callbackUrl}
-          missing="Google sign-in needs AUTH_GOOGLE_ID and AUTH_GOOGLE_SECRET."
-        />
-        <OAuthButton
-          label="Continue with GitHub"
-          provider="github"
-          enabled={providers.github}
-          callbackUrl={callbackUrl}
-          missing="GitHub sign-in needs AUTH_GITHUB_ID and AUTH_GITHUB_SECRET."
-        />
+        {providers.map((provider) => (
+          <OAuthButton
+            key={provider.id}
+            label={provider.label}
+            provider={provider.id}
+            enabled={provider.enabled}
+            callbackUrl={callbackUrl}
+            missing={provider.missing}
+          />
+        ))}
       </div>
       <p className="text-sm text-muted-foreground">{footer}</p>
     </div>
@@ -212,7 +213,7 @@ function OAuthButton({
   missing,
 }: {
   label: string
-  provider: "google" | "github"
+  provider: OAuthButtonConfig["id"]
   enabled: boolean
   callbackUrl: string
   missing: string
